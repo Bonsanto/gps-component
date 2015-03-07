@@ -10,7 +10,8 @@
 <x-map></x-map>
 <script>
 	var flip = function () {
-		document.querySelector("x-map").hide();
+		var pic =  document.querySelector("x-map");
+		pic.hidden = !pic.hidden;
 	};
 </script>
 </body>
