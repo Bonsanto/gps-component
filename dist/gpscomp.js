@@ -44,6 +44,31 @@ GpsProto.show = function () {
 	this.style.visibility = "visible";
 };
 
+//Async method a callback must be used
+GpsProto.getCoordinates = function (callback) {
+	;
+};
+
+
+GpsProto.setDimension = function () {
+	;
+};
+
+//set new location to show in the map
+GpsProto.setLocation = function (latitude, longitude) {
+	const MAX_LATITUDE = 90.00,
+			MAX_LONGITUDE = 180.00;
+
+	if (latitude < -MAX_LATITUDE || latitude > MAX_LATITUDE || longitude < -MAX_LONGITUDE || longitude > MAX_LONGITUDE) {
+		throw new RangeError("Latitude must be between <-90º and 90º> and longitude between <-180º 180º>", "gpscomp.js", "60"/*todo*/);
+	} else {
+		var mark = "&markers=color:blue%7Clabel:S%7C" + latitude + "," + longitude;
+
+		this.shadowRoot.querySelector("img").src = "http://maps.googleapis.com/maps/api/staticmap?center=" +
+		mark + "&zoom=" + latitude + "," + "12&size=400x400&sensor=false&markers=" + longitude;
+	}
+};
+
 var geoAvailable = function () {
 	return navigator.geolocation !== undefined;
 };

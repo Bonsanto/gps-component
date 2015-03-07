@@ -7,11 +7,23 @@
 </head>
 <body>
 <button onclick="flip()">FLIP</button>
+<p> try with 38.897777777777776,-77.0363888888889</p>
+<input type="number" placeholder="latitude"/>
+<input type="number" placeholder="longitude"/>
+<button onclick="redraw()">Change place</button>
+<br/>
+<br/>
 <x-map></x-map>
 <script>
 	var flip = function () {
 		var pic =  document.querySelector("x-map");
 		pic.hidden = !pic.hidden;
+	};
+
+	var redraw = function () {
+		var lat = document.querySelectorAll("input")[0].value;
+		var lon = document.querySelectorAll("input")[1].value;
+		document.querySelector("x-map").setLocation(lat, lon);
 	};
 </script>
 </body>
