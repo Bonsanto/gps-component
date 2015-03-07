@@ -6,6 +6,13 @@
 	<script src="dist/gpscomp.js"></script>
 </head>
 <body>
-	<x-map></x-map>
+<button onclick="flip()">FLIP</button>
+<x-map></x-map>
+<script>
+	var flip = function () {
+		var pic =  document.querySelector("x-map");
+		pic.hidden = !pic.hidden;
+	};
+</script>
 </body>
 </html>
