@@ -25,6 +25,24 @@ GpsProto.createdCallback = function () {
 	}
 };
 
+Object.defineProperties(GpsProto, {
+	"hidden": {
+		get: function () {
+			return this.style.visibility === "hidden";
+		},
+		set: function (value) {
+			value ? this.hide() : this.show();
+		}
+	}
+});
+
+GpsProto.hide = function () {
+	this.style.visibility = "hidden";
+};
+
+GpsProto.show = function () {
+	this.style.visibility = "visible";
+};
 
 var geoAvailable = function () {
 	return navigator.geolocation !== undefined;
