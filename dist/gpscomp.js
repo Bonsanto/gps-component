@@ -13,7 +13,7 @@ GpsProto.createdCallback = function () {
 
 			map.src = "http://maps.googleapis.com/maps/api/staticmap?center=" +
 			mark + "&zoom=" + lati + "," + "12&size=400x400&sensor=false&markers=" + long;
-
+			map.setAttribute("draggable", "false");
 			shadow.appendChild(map);
 		}, function (error) {
 			alert(error);
