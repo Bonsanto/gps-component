@@ -6,13 +6,13 @@ GpsProto.createdCallback = function () {
 
 	if (geoAvailable()) {
 		navigator.geolocation.getCurrentPosition(function (position) {
-			var lati = position.coords.latitude;
-			var long = position.coords.longitude;
+			var lat = position.coords.latitude;
+			var lon = position.coords.longitude;
 			var acc = position.coords.accuracy;
-			var mark = "&markers=color:blue%7Clabel:S%7C" + lati + "," + long;
+			var mark = "&markers=color:blue%7Clabel:S%7C" + lat + "," + lon;
 
 			map.src = "http://maps.googleapis.com/maps/api/staticmap?center=" +
-			mark + "&zoom=" + lati + "," + "12&size=400x400&sensor=false&markers=" + long;
+			mark + "&zoom=" + lat + "," + "12&size=400x400&sensor=false&markers=" + lon;
 			map.setAttribute("draggable", "false");
 			shadow.appendChild(map);
 		}, function (error) {
