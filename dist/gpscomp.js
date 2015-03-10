@@ -1,20 +1,88 @@
 var GpsProto = Object.create(HTMLDivElement.prototype);
 
+Object.defineProperties(GpsProto, {
+	"hidden": {
+		get: function () {
+			return this.style.visibility === "hidden";
+		},
+		set: function (value) {
+			value ? this.hide() : this.show();
+		}
+	},
+	"coordinates": {
+		get: function () {
+			return [this.latitude, this.longitude];
+		},
+		set: function (coords) {
+			this.latitude = coords[0];
+			this.longitude = coords[1];
+		}
+	},
+	"latitude": {
+		get: function () {
+			return this.lat;
+		},
+		set: function (latitude) {
+			this.lat = latitude;
+		}
+	},
+	"longitude": {
+		get: function () {
+			return this.lon;
+		},
+		set: function (longitude) {
+			this.lon = longitude;
+		}
+	},
+	"watch": {
+		enumerable: false,
+		configurable: true,
+		writable: false,
+		value: function (prop, handler) {
+			var oldVal = this[prop],
+				newVal = oldVal,
+				getter = function () {
+					return newVal;
+				},
+				setter = function (val) {
+					oldVal = newVal;
+					return newVal = handler.call(this, prop, oldVal, val);
+				};
+			if (delete this[prop]) { // can't watch constants
+				Object.defineProperty(this, prop, {
+					get: getter,
+					set: setter,
+					enumerable: true,
+					configurable: true
+				});
+			}
+		}
+	},
+	"unwatch": {
+		enumerable: false,
+		configurable: true,
+		writable: false,
+		value: function (prop) {
+			var val = this[prop];
+			delete this[prop]; // remove accessor
+			this[prop] = val;
+		}
+	}
+});
+
 GpsProto.createdCallback = function () {
 	var shadow = this.createShadowRoot();
 	var map = document.createElement("img");
+	var _this = this;
 
 	if (geoAvailable()) {
 		navigator.geolocation.getCurrentPosition(function (position) {
-			var lat = position.coords.latitude;
-			var lon = position.coords.longitude;
-			var acc = position.coords.accuracy;
-			var mark = "&markers=color:blue%7Clabel:S%7C" + lat + "," + lon;
-
-			map.src = "http://maps.googleapis.com/maps/api/staticmap?center=" +
-			mark + "&zoom=" + lat + "," + "12&size=400x400&sensor=false&markers=" + lon;
+			_this.latitude = position.coords.latitude;
+			_this.longitude = position.coords.longitude;
+			_this.accuracy = position.coords.accuracy;
 			map.setAttribute("draggable", "false");
 			shadow.appendChild(map);
+			_this.draw();
 		}, function (error) {
 			alert(error);
 		}, {
@@ -24,17 +92,6 @@ GpsProto.createdCallback = function () {
 		});
 	}
 };
-
-Object.defineProperties(GpsProto, {
-	"hidden": {
-		get: function () {
-			return this.style.visibility === "hidden";
-		},
-		set: function (value) {
-			value ? this.hide() : this.show();
-		}
-	}
-});
 
 GpsProto.hide = function () {
 	this.style.visibility = "hidden";
@@ -46,7 +103,7 @@ GpsProto.show = function () {
 
 //Async method a callback must be used
 GpsProto.getCoordinates = function (callback) {
-	;
+	return [this.latitude, this.longitude];
 };
 
 
@@ -57,16 +114,22 @@ GpsProto.setDimension = function () {
 //set new location to show in the map
 GpsProto.setLocation = function (latitude, longitude) {
 	const MAX_LATITUDE = 90.00,
-			MAX_LONGITUDE = 180.00;
+		MAX_LONGITUDE = 180.00;
 
-	if (latitude < -MAX_LATITUDE || latitude > MAX_LATITUDE || longitude < -MAX_LONGITUDE || longitude > MAX_LONGITUDE) {
+	this.latitude = parseFloat(latitude);
+	this.longitude = parseFloat(longitude);
+	if (this.latitude < -MAX_LATITUDE || this.latitude > MAX_LATITUDE || this.longitude < -MAX_LONGITUDE || this.longitude > MAX_LONGITUDE) {
 		throw new RangeError("Latitude must be between <-90º and 90º> and longitude between <-180º 180º>", "gpscomp.js", "60"/*todo*/);
 	} else {
-		var mark = "&markers=color:blue%7Clabel:S%7C" + latitude + "," + longitude;
-
-		this.shadowRoot.querySelector("img").src = "http://maps.googleapis.com/maps/api/staticmap?center=" +
-		mark + "&zoom=" + latitude + "," + "12&size=400x400&sensor=false&markers=" + longitude;
+		this.draw();
 	}
+};
+
+GpsProto.draw = function () {
+	var mark = "&markers=color:blue%7Clabel:S%7C" + this.latitude + "," + this.longitude;
+
+	this.shadowRoot.querySelector("img").src = "http://maps.googleapis.com/maps/api/staticmap?center=" +
+	mark + "&zoom=" + this.latitude + "," + "12&size=400x400&sensor=false&markers=" + this.longitude;
 };
 
 var geoAvailable = function () {
