@@ -9,6 +9,24 @@ Object.defineProperties(GpsProto, {
 			value ? this.hide() : this.show();
 		}
 	},
+	"width": {
+		get: function () {
+			return this.w;
+		},
+		set: function (value) {
+			this.w = value;
+			this.draw();
+		}
+	},
+	"height": {
+		get: function () {
+			return this.h;
+		},
+		set: function (value) {
+			this.h = value;
+			this.draw();
+		}
+	},
 	"coordinates": {
 		get: function () {
 			return [this.latitude, this.longitude];
@@ -80,6 +98,8 @@ GpsProto.createdCallback = function () {
 			_this.latitude = position.coords.latitude;
 			_this.longitude = position.coords.longitude;
 			_this.accuracy = position.coords.accuracy;
+			_this.w = parseInt(_this.style.width);
+			_this.h = parseInt(_this.style.height);
 			map.setAttribute("draggable", "false");
 			shadow.appendChild(map);
 			_this.draw();
@@ -129,7 +149,7 @@ GpsProto.draw = function () {
 	var mark = "&markers=color:blue%7Clabel:S%7C" + this.latitude + "," + this.longitude;
 
 	this.shadowRoot.querySelector("img").src = "http://maps.googleapis.com/maps/api/staticmap?center=" +
-	mark + "&zoom=" + this.latitude + "," + "12&size=400x400&sensor=false&markers=" + this.longitude;
+	mark + "&zoom=" + this.latitude + "," + "12&size=" + this.w + "x" + this.h + "&sensor=false&markers=" + this.longitude;
 };
 
 var geoAvailable = function () {
