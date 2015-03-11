@@ -127,8 +127,11 @@ GpsProto.getCoordinates = function (callback) {
 };
 
 
-GpsProto.setDimension = function () {
-	;
+GpsProto.setDimension = function (width, height) {
+	this.width = width;
+	this.height = height;
+
+	this.draw();
 };
 
 //set new location to show in the map
@@ -136,11 +139,11 @@ GpsProto.setLocation = function (latitude, longitude) {
 	const MAX_LATITUDE = 90.00,
 		MAX_LONGITUDE = 180.00;
 
-	this.latitude = parseFloat(latitude);
-	this.longitude = parseFloat(longitude);
-	if (this.latitude < -MAX_LATITUDE || this.latitude > MAX_LATITUDE || this.longitude < -MAX_LONGITUDE || this.longitude > MAX_LONGITUDE) {
+	if (latitude < -MAX_LATITUDE || latitude > MAX_LATITUDE || longitude < -MAX_LONGITUDE || longitude > MAX_LONGITUDE) {
 		throw new RangeError("Latitude must be between <-90º and 90º> and longitude between <-180º 180º>", "gpscomp.js", "60"/*todo*/);
 	} else {
+		this.latitude = parseFloat(latitude);
+		this.longitude = parseFloat(longitude);
 		this.draw();
 	}
 };
