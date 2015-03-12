@@ -1,3 +1,7 @@
+const DEFAULT_ZOOM = 17,
+	MAX_LATITUDE = 90.00,
+	MAX_LONGITUDE = 180.00;
+
 var GpsProto = Object.create(HTMLDivElement.prototype);
 
 Object.defineProperties(GpsProto, {
@@ -52,6 +56,15 @@ Object.defineProperties(GpsProto, {
 			this.lon = longitude;
 		}
 	},
+	"zoom": {
+		get: function () {
+			return this.z;
+		},
+		set: function (value) {
+			this.z = value;
+			this.draw();
+		}
+	},
 	"watch": {
 		enumerable: false,
 		configurable: true,
@@ -95,6 +108,7 @@ GpsProto.createdCallback = function () {
 
 	if (geoAvailable()) {
 		navigator.geolocation.getCurrentPosition(function (position) {
+			_this.z = parseInt(_this.getAttribute("zoom")) || DEFAULT_ZOOM;
 			_this.latitude = position.coords.latitude;
 			_this.longitude = position.coords.longitude;
 			_this.accuracy = position.coords.accuracy;
@@ -136,10 +150,8 @@ GpsProto.setDimension = function (width, height) {
 
 //set new location to show in the map
 GpsProto.setLocation = function (latitude, longitude) {
-	const MAX_LATITUDE = 90.00,
-		MAX_LONGITUDE = 180.00;
-
-	if (latitude < -MAX_LATITUDE || latitude > MAX_LATITUDE || longitude < -MAX_LONGITUDE || longitude > MAX_LONGITUDE) {
+	if (latitude < -MAX_LATITUDE || latitude > MAX_LATITUDE ||
+		longitude < -MAX_LONGITUDE || longitude > MAX_LONGITUDE) {
 		throw new RangeError("Latitude must be between <-90º and 90º> and longitude between <-180º 180º>", "gpscomp.js", "60"/*todo*/);
 	} else {
 		this.latitude = parseFloat(latitude);
@@ -152,7 +164,7 @@ GpsProto.draw = function () {
 	var mark = "&markers=color:blue%7Clabel:S%7C" + this.latitude + "," + this.longitude;
 
 	this.shadowRoot.querySelector("img").src = "http://maps.googleapis.com/maps/api/staticmap?center=" +
-	mark + "&zoom=" + this.latitude + "," + "12&size=" + this.w + "x" + this.h + "&sensor=false&markers=" + this.longitude;
+	mark + "&zoom=" + this.zoom + "&size=" + this.w + "x" + this.h + "&sensor=false";
 };
 
 var geoAvailable = function () {
