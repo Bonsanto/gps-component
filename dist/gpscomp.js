@@ -2,6 +2,10 @@ const DEFAULT_ZOOM = 17,
 	MAX_LATITUDE = 90.00,
 	MAX_LONGITUDE = 180.00;
 
+var scrollManager = function (event) {
+	this.zoom += (event.deltaY < 0) ? 1 : -1;
+};
+
 var GpsProto = Object.create(HTMLDivElement.prototype);
 
 Object.defineProperties(GpsProto, {
@@ -108,6 +112,7 @@ GpsProto.createdCallback = function () {
 
 	if (geoAvailable()) {
 		navigator.geolocation.getCurrentPosition(function (position) {
+			_this.addEventListener("mousewheel", scrollManager, false);
 			_this.z = parseInt(_this.getAttribute("zoom")) || DEFAULT_ZOOM;
 			_this.latitude = position.coords.latitude;
 			_this.longitude = position.coords.longitude;
