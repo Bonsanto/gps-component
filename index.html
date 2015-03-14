@@ -13,6 +13,14 @@
 <button onclick="redraw()" style="left: 100px; top:1000px">Change place</button>
 <br/>
 <br/>
+
+<p>Add a new marker. Please write the longitude and latitude</p>
+<input type="number" placeholder="latitude"/>
+<input type="number" placeholder="longitude"/>
+<button onclick="newMarker()" style="left: 100px; top:700px">Add Marker</button>
+<br/>
+<br/>
+
 <x-map style="width: 300px; height: 300px" zoom="7"></x-map>
 <script>
 	var flip = function () {
@@ -25,6 +33,13 @@
 		var lon = document.querySelectorAll("input")[1].value;
 		document.querySelector("x-map").setLocation(lat, lon);
 	};
+
+	var newMarker = function(){
+		var lat = document.querySelectorAll("input")[2].value;
+		var lon = document.querySelectorAll("input")[3].value;
+		document.querySelector("x-map").newMarker(lat,lon);
+	}
+
 </script>
 </body>
 </html>

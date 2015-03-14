@@ -166,10 +166,17 @@ GpsProto.setLocation = function (latitude, longitude) {
 };
 
 GpsProto.draw = function () {
-	var mark = "&markers=color:blue%7Clabel:S%7C" + this.latitude + "," + this.longitude;
+	this.mark = "&markers=color:blue%7Clabel:S%7C" + this.latitude + "," + this.longitude;
 
 	this.shadowRoot.querySelector("img").src = "http://maps.googleapis.com/maps/api/staticmap?center=" +
-	mark + "&zoom=" + this.zoom + "&size=" + this.w + "x" + this.h + "&sensor=false";
+	this.mark + "&zoom=" + this.zoom + "&size=" + this.w + "x" + this.h + "&sensor=false";
+};
+
+GpsProto.newMarker = function (latitude,longitude){
+	var newMark = "&markers=color:red%7Clabel:C%7C" + latitude + "," + longitude;
+
+	this.shadowRoot.querySelector("img").src = "http://maps.googleapis.com/maps/api/staticmap?center=" +
+	newMark + this.mark + "&zoom=" + this.zoom + "&size=" + this.w + "x" + this.h + "&sensor=false";
 };
 
 var geoAvailable = function () {
