@@ -176,7 +176,7 @@ GpsProto.newMarker = function (latitude,longitude){
 	var newMark = "&markers=color:red%7Clabel:C%7C" + latitude + "," + longitude;
 
 	this.shadowRoot.querySelector("img").src = "http://maps.googleapis.com/maps/api/staticmap?center=" +
-	newMark + this.mark + "&zoom=" + this.zoom + "&size=" + this.w + "x" + this.h + "&sensor=false";
+	newMark + this.mark + "&size=" + this.w + "x" + this.h + "&sensor=false";
 };
 
 var geoAvailable = function () {
