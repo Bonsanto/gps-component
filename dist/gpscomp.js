@@ -180,7 +180,7 @@ GpsProto.newMarker = function (latitude,longitude){
 };
 
 GpsProto.calculateDistances = function(latitude1,longitude1,latitude2,longitude2){
-	if(latitude1 && longitude1 || latitude2 && longitude2 == !null){
+	if(latitude1 || longitude1 && latitude2 || longitude2 == !null){
 		var R = 6371; // km
 		var dLat = (latitude2 - latitude1)* Math.PI / 180;
 		var dLon = (longitude2 - longitude1)* Math.PI / 180;
