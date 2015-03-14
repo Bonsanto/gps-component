@@ -180,15 +180,20 @@ GpsProto.newMarker = function (latitude,longitude){
 };
 
 GpsProto.calculateDistances = function(latitude1,longitude1,latitude2,longitude2){
-	var R = 6371; // km
-	var dLat = (latitude2 - latitude1)* Math.PI / 180;
-	var dLon = (longitude2 - longitude1)* Math.PI / 180;
-	var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-		Math.cos(latitude1* Math.PI / 180) * Math.cos(latitude2* Math.PI / 180) *
-		Math.sin(dLon / 2) * Math.sin(dLon / 2);
-	var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-	var d = R * c;
-	alert(d.toFixed(4)+" kilometers");
+	if(latitude1 || longitude1 || latitude2 || longitude2 == !null){
+		var R = 6371; // km
+		var dLat = (latitude2 - latitude1)* Math.PI / 180;
+		var dLon = (longitude2 - longitude1)* Math.PI / 180;
+		var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+			Math.cos(latitude1* Math.PI / 180) * Math.cos(latitude2* Math.PI / 180) *
+			Math.sin(dLon / 2) * Math.sin(dLon / 2);
+		var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+		var d = R * c;
+		alert(d.toFixed(4)+" kilometers");
+	}
+	else{
+		alert("You have to enter valid latitudes and longitudes")
+	}
 };
 
 var geoAvailable = function () {
