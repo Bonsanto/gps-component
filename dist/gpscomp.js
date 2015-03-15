@@ -35,15 +35,6 @@ Object.defineProperties(GpsProto, {
 			this.draw();
 		}
 	},
-	"coordinates": {
-		get: function () {
-			return [this.latitude, this.longitude];
-		},
-		set: function (coords) {
-			this.latitude = coords[0];
-			this.longitude = coords[1];
-		}
-	},
 	"latitude": {
 		get: function () {
 			return this.lat;
@@ -67,6 +58,77 @@ Object.defineProperties(GpsProto, {
 		set: function (value) {
 			this.z = value;
 			this.draw();
+		}
+	},
+	"hide": {
+		value: function () {
+			this.style.visibility = "hidden"
+		}
+	},
+	"show": {
+		value: function () {
+			this.style.visibility = "visible";
+		}
+	},
+	"draw": {
+		value: function () {
+			this.mark = "&markers=color:blue%7Clabel:S%7C" + this.latitude + "," + this.longitude;
+			this.shadowRoot.querySelector("img").src = "http://maps.googleapis.com/maps/api/staticmap?center=" +
+			this.mark + "&zoom=" + this.zoom + "&size=" + this.w + "x" + this.h + "&sensor=false";
+		}
+	},
+	"getLocation": {
+		value: function () {
+			return {
+				latitude: this.latitude,
+				longitude: this.longitude
+			};
+		}
+	},
+	"setLocation": {
+		value: function (latitude, longitude) {
+			if (latitude < -MAX_LATITUDE || latitude > MAX_LATITUDE ||
+				longitude < -MAX_LONGITUDE || longitude > MAX_LONGITUDE) {
+				throw new RangeError("Latitude must be between <-90º and 90º> and longitude between <-180º 180º>", "gpscomp.js", "92"/*todo*/);
+			} else {
+				this.lat = parseFloat(latitude);
+				this.lon = parseFloat(longitude);
+				this.draw();
+			}
+		}
+	},
+	"setDimensions": {
+		value: function (w, h) {
+			this.w = w;
+			this.h = h;
+			this.draw();
+		}
+	},
+	"calculateDistances": {
+		value: function (latitude1, longitude1, latitude2, longitude2) {
+			//TODO:Obtain the location of the user in this method or implemented in another one
+			if (latitude1 || longitude1 && latitude2 || longitude2 == !null) {
+				var R = 6371; // km
+				var dLat = (latitude2 - latitude1) * Math.PI / 180;
+				var dLon = (longitude2 - longitude1) * Math.PI / 180;
+				var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+					Math.cos(latitude1 * Math.PI / 180) * Math.cos(latitude2 * Math.PI / 180) *
+					Math.sin(dLon / 2) * Math.sin(dLon / 2);
+				var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+				var d = R * c;
+				alert(d.toFixed(4) + " kilometers");
+			}
+			else {
+				alert("You have to enter valid latitudes and longitudes")
+			}
+		}
+	},
+	"newMaker": {
+		value: function (latitude, longitude) {
+			var newMark = "&markers=color:red%7Clabel:C%7C" + latitude + "," + longitude;
+
+			this.shadowRoot.querySelector("img").src = "http://maps.googleapis.com/maps/api/staticmap?center=" +
+			newMark + this.mark + "&size=" + this.w + "x" + this.h + "&sensor=false";
 		}
 	},
 	"watch": {
@@ -114,8 +176,8 @@ GpsProto.createdCallback = function () {
 		navigator.geolocation.getCurrentPosition(function (position) {
 			_this.addEventListener("mousewheel", scrollManager, false);
 			_this.z = parseInt(_this.getAttribute("zoom")) || DEFAULT_ZOOM;
-			_this.latitude = position.coords.latitude;
-			_this.longitude = position.coords.longitude;
+			_this.lat = position.coords.latitude;
+			_this.lon = position.coords.longitude;
 			_this.accuracy = position.coords.accuracy;
 			_this.w = parseInt(_this.style.width);
 			_this.h = parseInt(_this.style.height);
@@ -129,73 +191,6 @@ GpsProto.createdCallback = function () {
 			timeout: 5000,
 			maximumAge: 60000
 		});
-	}
-};
-
-GpsProto.hide = function () {
-	this.style.visibility = "hidden";
-};
-
-GpsProto.show = function () {
-	this.style.visibility = "visible";
-};
-
-//Async method a callback must be used
-GpsProto.getCoordinates = function (callback) {
-	return [this.latitude, this.longitude];
-};
-
-
-GpsProto.setDimension = function (width, height) {
-	this.width = width;
-	this.height = height;
-
-	this.draw();
-};
-
-//set new location to show in the map
-GpsProto.setLocation = function (latitude, longitude) {
-	if (latitude < -MAX_LATITUDE || latitude > MAX_LATITUDE ||
-		longitude < -MAX_LONGITUDE || longitude > MAX_LONGITUDE) {
-		throw new RangeError("Latitude must be between <-90º and 90º> and longitude between <-180º 180º>", "gpscomp.js", "60"/*todo*/);
-	} else {
-		this.latitude = parseFloat(latitude);
-		this.longitude = parseFloat(longitude);
-		this.draw();
-	}
-};
-
-GpsProto.draw = function () {
-	this.mark = "&markers=color:blue%7Clabel:S%7C" + this.latitude + "," + this.longitude;
-
-	this.shadowRoot.querySelector("img").src = "http://maps.googleapis.com/maps/api/staticmap?center=" +
-	this.mark + "&zoom=" + this.zoom + "&size=" + this.w + "x" + this.h + "&sensor=false";
-};
-
-GpsProto.newMarker = function (latitude,longitude){
-	var newMark = "&markers=color:red%7Clabel:C%7C" + latitude + "," + longitude;
-
-	this.shadowRoot.querySelector("img").src = "http://maps.googleapis.com/maps/api/staticmap?center=" +
-	newMark + this.mark + "&size=" + this.w + "x" + this.h + "&sensor=false";
-};
-
-GpsProto.calculateDistances = function(latitude1,longitude1,latitude2,longitude2){
-
-	//TODO:Obtain the location of the user in this method or implemented in another one
-
-	if(latitude1 || longitude1 && latitude2 || longitude2 == !null){
-		var R = 6371; // km
-		var dLat = (latitude2 - latitude1)* Math.PI / 180;
-		var dLon = (longitude2 - longitude1)* Math.PI / 180;
-		var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-			Math.cos(latitude1* Math.PI / 180) * Math.cos(latitude2* Math.PI / 180) *
-			Math.sin(dLon / 2) * Math.sin(dLon / 2);
-		var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-		var d = R * c;
-		alert(d.toFixed(4)+" kilometers");
-	}
-	else{
-		alert("You have to enter valid latitudes and longitudes")
 	}
 };
 
