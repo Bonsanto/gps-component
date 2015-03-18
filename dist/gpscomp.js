@@ -123,7 +123,7 @@ Object.defineProperties(GpsProto, {
 			}
 		}
 	},
-	"newMaker": {
+	"newMarker": {
 		value: function (latitude, longitude) {
 			var newMark = "&markers=color:red%7Clabel:C%7C" + latitude + "," + longitude;
 
